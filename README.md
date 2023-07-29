@@ -20,6 +20,7 @@ ButtonAlphaChange is a Unity script that enables fading alpha transitions for a 
 
 ```csharp
 using UnityEngine;
+using ArcaneGames.UI;
 
 public class ExampleController : MonoBehaviour
 {
