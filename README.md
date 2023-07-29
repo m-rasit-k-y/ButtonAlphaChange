@@ -25,6 +25,19 @@ public class ExampleController : MonoBehaviour
 {
     [SerializeField] private ButtonAlphaChange buttonAlphaChange;
 
+    private void Start()
+    {
+        // Listen to the button's click event and specify the method to be invoked
+        buttonAlphaChange.onClick.AddListener(OnButtonClick);
+    }
+
+    // Method to be invoked when the button is clicked
+    private void OnButtonClick()
+    {
+        Debug.Log("Button Clicked!");
+        // Add your custom logic here when the button is clicked
+    }
+
     public void DisableButtonInteraction()
     {
         buttonAlphaChange.Interactable = false;
