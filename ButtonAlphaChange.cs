@@ -5,25 +5,26 @@ using UnityEngine.UI;
 
 namespace ArcaneGames.UI
 {
-    public class ButtonAlphaChange : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler,
-        IPointerUpHandler, IPointerClickHandler, IDeselectHandler
+    public class ButtonAlphaChange : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerClickHandler
     {
-        public bool interactable = true;
+        [SerializeField] private bool interactable = true;
         public bool Interactable
         {
             get => interactable;
             set
             {
-                SetAlpha(value ? normalAlpha : disabledAlpha, fadeDuration);
+                if (interactable == value) return;
+            
                 interactable = value;
+                SetButtonAlpha(value ? normalAlpha : disabledAlpha);
             }
         }
-    
-        [Range(0f,1f)] public float normalAlpha = 1f;
-        [Range(0f,1f)] public float highlightedAlpha = 0.8f;
-        [Range(0f,1f)] public float pressedAlpha = 0.5f;
-        [Range(0f,1f)] public float disabledAlpha = 0.5f;
-        [Range(0f,1f)] public float fadeDuration = 0.1f;
+
+        [Range(0f, 1f)] public float normalAlpha = 1f;
+        [Range(0f, 1f)] public float highlightedAlpha = 0.8f;
+        [Range(0f, 1f)] public float pressedAlpha = 0.5f;
+        [Range(0f, 1f)] public float disabledAlpha = 0.5f;
+        [Range(0f, 1f)] public float fadeDuration = 0.1f;
 
         [Space(20)]
         public UnityEvent onClick = new();
@@ -35,41 +36,40 @@ namespace ArcaneGames.UI
         {
             _childGraphics = GetComponentsInChildren<Graphic>();
         
-            SetAlpha(interactable ? normalAlpha : disabledAlpha, fadeDuration);
+            SetButtonAlpha(interactable ? normalAlpha : disabledAlpha);
         }
 #endif
+    
+        private void Start()
+        {
+            _childGraphics = GetComponentsInChildren<Graphic>();
+
+            SetButtonAlpha(interactable ? normalAlpha : disabledAlpha);
+        }
 
         private void OnDisable()
         {
-            SetAlpha(normalAlpha, 0f);
+            SetButtonAlpha(interactable ? normalAlpha : disabledAlpha);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (!interactable) return;
         
-            SetAlpha(highlightedAlpha, fadeDuration);
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            if (!interactable) return;
-        
-            SetAlpha(pressedAlpha, fadeDuration);
+            SetButtonAlpha(highlightedAlpha);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             if (!interactable) return;
         
-            SetAlpha(normalAlpha, fadeDuration);
+            SetButtonAlpha(normalAlpha);
         }
-
-        public void OnPointerUp(PointerEventData eventData)
+        public void OnPointerDown(PointerEventData eventData)
         {
             if (!interactable) return;
         
-            SetAlpha(normalAlpha, fadeDuration);
+            SetButtonAlpha(pressedAlpha);
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -79,16 +79,11 @@ namespace ArcaneGames.UI
             onClick.Invoke();
         }
 
-        public void OnDeselect(BaseEventData eventData)
-        {
-            SetAlpha(disabledAlpha, fadeDuration);
-        }
-
-        private void SetAlpha(float alpha, float duration, bool ignoreTimeScale = true)
+        private void SetButtonAlpha(float targetAlpha)
         {
             foreach (Graphic graphic in _childGraphics)
             {
-                graphic.CrossFadeAlpha(alpha, duration, ignoreTimeScale);
+                graphic.CrossFadeAlpha(targetAlpha, fadeDuration, true);
             }
         }
     }
